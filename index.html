@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+		body{
+			background: deepskyblue;
+		}
+			canvas{
+				position: absolute;
+				left: 0;
+				top: 0;
+				bottom: 0;
+				right: 0;
+				margin: auto;
+				border: 1px solid #fff;
+				
+			}
+		</style>
+		<script type="text/javascript">
+			window.onload=function(){
+			
+				
+				var cvs=document.getElementById('cvs')
+				var ctx=cvs.getContext('2d')
+				
+				var scence=30;
+				var size=20;
+				var snake=[{x:10,y:10},{x:10,y:11},{x:10,y:12}]
+				var destion=0;
+				var apples=[];
+				var num=0;
+				//绘制
+				function move(){
+					ctx.clearRect(0,0,cvs.width,cvs.height)
+					//绘制场景
+					drew()
+					//绘制蛇
+					drewsnake()
+					drewapple();
+					//更新数据
+					updata()
+				}
+				//更新数据
+				function updata(){
+					//身体移动
+					for(var i=snake.length-1;i>=1;i--){
+						snake[i].x=snake[i-1].x
+						snake[i].y=snake[i-1].y
+					}
+					switch (destion){
+						case 0:snake[0].x--;break;
+						case 1:snake[0].y--;break;
+						case 2:snake[0].x++;break;
+						case 3:snake[0].y++;break;
+					}
+					num++
+					if(num%5==0){
+						apple()
+					}
+					//吃苹果
+					for(var i=0;i<apples.length;i++){
+						if(apples[i].x==snake[0].x && apples[i].y==snake[0].y){
+							apples.splice(i,1)
+							grow()
+						}
+						
+					}
+					//咬到自己
+					for(var i=1;i<snake.length;i++){
+						if(snake[i].x===snake[0].x && snake[i].y===snake[0].y){
+								clearInterval(timer)
+								alert("Gameover")
+								
+						}
+					}
+					
+					//长身体
+					function grow(){
+						var body={
+							x:snake[snake.length-1].x,
+							y:snake[snake.length-1].y
+						}
+						snake.push(body)
+					}
+					//穿墙
+					if(snake[0].x>=scence) snake[0].x=0;
+					if(snake[0].y>=scence) snake[0].y=0;
+					if(snake[0].x<0) snake[0].x=scence-1;
+					if(snake[0].y<0) snake[0].y=scence-1;
+				}
+				//绘制场景
+				function drew(){
+					for(var x=0;x<scence;x++){
+						for(var y=0;y<scence;y++){
+							ctx.strokeStyle='#fff'
+							ctx.strokeRect(x*size,y*size,size,size)
+						}
+					}
+				}
+				
+				//绘制蛇
+				function drewsnake(){
+					for(var i=0;i<snake.length;i++){
+						ctx.fillStyle='#000'
+						ctx.fillRect(snake[i].x*size,snake[i].y*size,size,size)
+					}
+				}
+				//产生苹果
+				function apple(){
+					var x=parseInt(Math.random()*scence)
+					var y=parseInt(Math.random()*scence)
+					apples.push({x:x,y:y})
+				}
+				//绘制苹果
+				function drewapple(){
+					for(var i=0;i<apples.length;i++){
+						ctx.fillStyle='red'
+						ctx.fillRect(apples[i].x*size,apples[i].y*size,size,size)
+					}
+				}
+				window.onkeydown=function(e){
+					switch (e.keyCode){
+						case 37:if(destion!=2) destion=0;break;
+						case 38:if(destion!=3) destion=1;break;
+						case 39:if(destion!=0) destion=2;break;
+						case 40:if(destion!=1) destion=3;break;
+						
+					}
+				}
+				
+				var timer=setInterval(move,500)
+				
+			}
+		</script>
+	</head>
+	<body>
+		<canvas id="cvs" width="400" height="400"></canvas>
+	</body>
+</html>
